@@ -7,6 +7,7 @@
 #pragma once
 
 #include "bitmaps.h"
+#include "fonts/custom_fonts.h"
 #include "languages.h"
 
 inline const u8g2_cb_t* getU8G2Rotation(const int rotationValue) {

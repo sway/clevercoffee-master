@@ -22,6 +22,10 @@ namespace Templates {
     namespace Upright {
 #include "displayTemplateUpright.h"
     }
+
+    namespace MinimalWithStatus {
+#include "displayTemplateMinimalWithStatus.h"
+    }
 } // namespace Templates
 
 class DisplayTemplateManager {
@@ -32,6 +36,7 @@ class DisplayTemplateManager {
             TEMP_ONLY = 2,
             SCALE = 3,
             UPRIGHT = 4,
+            MINIMAL_WITH_STATUS = 5,
         };
 
         static void initializeDisplay(const int templateId) {
@@ -52,6 +57,9 @@ class DisplayTemplateManager {
                     break;
                 case UPRIGHT:
                     currentPrintScreen = &Templates::Upright::printScreen;
+                    break;
+                case MINIMAL_WITH_STATUS:
+                    currentPrintScreen = &Templates::MinimalWithStatus::printScreen;
                     break;
                 default:
                     currentPrintScreen = &Templates::Standard::printScreen;
