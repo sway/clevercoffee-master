@@ -51,7 +51,7 @@ const char* switchModes[2] = {"Normally Open", "Normally Closed"};
 const char* relayTriggerTypes[2] = {"Low Trigger", "High Trigger"};
 
 static constexpr const char* const brewModes[] = {"Manual", "Automatic"};
-static constexpr const char* const displayTemplates[] = {"Standard", "Minimal", "Temp only", "Scale", "Upright"};
+static constexpr const char* const displayTemplates[] = {"Standard", "Minimal", "Temp only", "Scale", "Upright", "Minimal with status"};
 static constexpr const char* const displayLanguages[] = {"Deutsch", "English", "Español"};
 static constexpr const char* const blinkingModes[] = {"Off", "Near Setpoint", "Away From Setpoint"};
 static constexpr const char* const logLevels[] = {"TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL", "SILENT"};
@@ -526,7 +526,7 @@ void ParameterRegistry::initialize(Config& config) {
         901,
         nullptr,
         displayTemplates,
-        5,
+        6,
         "Set the display template",
         [] { return true; },
         true

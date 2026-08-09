@@ -306,7 +306,7 @@ class Config {
             _configDefs.emplace("system.showdisplay.enabled", ConfigDef::forBool(true));
 
             // Display
-            _configDefs.emplace("display.template", ConfigDef::forInt(0, 0, 4));
+            _configDefs.emplace("display.template", ConfigDef::forInt(0, 0, 5));
             _configDefs.emplace("display.inverted", ConfigDef::forBool(false));
             _configDefs.emplace("display.language", ConfigDef::forInt(1, 0, 2));
             _configDefs.emplace("display.fullscreen_brew_timer", ConfigDef::forBool(false));

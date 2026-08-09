@@ -8,6 +8,7 @@
 
 #include "bitmaps.h"
 #include "languages.h"
+#include "fonts/custom_fonts.h"
 
 inline const u8g2_cb_t* getU8G2Rotation(const int rotationValue) {
     switch (rotationValue) {
