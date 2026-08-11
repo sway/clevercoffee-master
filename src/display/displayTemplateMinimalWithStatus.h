@@ -20,7 +20,7 @@ inline void displayUptime(const int x, const int y) {
         snprintf(uptimeString, sizeof(uptimeString), "%luh %02lum", hours, minutes);
     }
 
-    u8g2->setFont(u8g2_font_profont11_tf);
+    u8g2->setFont(custom_profont11);
     const int autox = x + 11 - u8g2->getStrWidth(uptimeString);
     u8g2->drawStr(autox, y, uptimeString);
 }
@@ -35,7 +35,7 @@ inline void customDisplayStatusbar() {
     }
     else {
         u8g2->setCursor(40, 0);
-        u8g2->setFont(u8g2_font_profont10_tf);
+        u8g2->setFont(custom_profont11);
         u8g2->print(langstring_offlinemode);
     }
 
@@ -52,7 +52,8 @@ inline void printScreen() {
 
     u8g2->clearBuffer();
 
-    customDisplayStatusbar();
+    displayStatusbar();
+    // customDisplayStatusbar();
 
     const float delta = config.get<float>("display.blinking.delta");
     const bool nearSetpoint = fabs(temperature - setpoint) <= delta;
@@ -62,13 +63,12 @@ inline void printScreen() {
     if (!(isrCounter < 500 && ((nearSetpoint && blinkMode == 1) || (!nearSetpoint && blinkMode == 2)))) {
         u8g2->setFont(custom_helvB24);
 
-        char tempBuf[12];
-        const int decimals = (temperature < 99.95) ? 1 : 0;
-        snprintf(tempBuf, sizeof(tempBuf), decimals ? "%.1f\xb0" : "%.0f\xb0", temperature);
-        const int startX = (128 - u8g2->getStrWidth(tempBuf)) / 2;
+        const int decimals = (temperature >= 99.95) ? 0 : 1;
+        const int startX = decimals ? 26 : 30;
 
         u8g2->setCursor(startX, 16);
-        u8g2->print(tempBuf);
+        u8g2->print(temperature, decimals);
+        u8g2->print("\xb0");
     }
 
     // State text, centered, all caps

@@ -12,5 +12,6 @@ extern const uint8_t custom_helvR24[] U8G2_FONT_SECTION("custom_helvR24");
 extern const uint8_t custom_helvR18[] U8G2_FONT_SECTION("custom_helvR18");
 extern const uint8_t custom_helvB18[] U8G2_FONT_SECTION("custom_helvB18");
 extern const uint8_t custom_helvB08[] U8G2_FONT_SECTION("custom_helvB08");
+extern const uint8_t custom_profont11[] U8G2_FONT_SECTION("custom_profont11");
 
 #endif /* CUSTOM_FONTS_H */
