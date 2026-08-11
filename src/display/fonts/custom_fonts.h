@@ -5,9 +5,12 @@
 #ifndef CUSTOM_FONTS_H
 #define CUSTOM_FONTS_H
 
-#include <u8g2.h>
+#include <clib/u8g2.h>
 
 extern const uint8_t custom_helvB24[] U8G2_FONT_SECTION("custom_helvB24");
+extern const uint8_t custom_helvR24[] U8G2_FONT_SECTION("custom_helvR24");
+extern const uint8_t custom_helvR18[] U8G2_FONT_SECTION("custom_helvR18");
+extern const uint8_t custom_helvB18[] U8G2_FONT_SECTION("custom_helvB18");
 extern const uint8_t custom_helvB08[] U8G2_FONT_SECTION("custom_helvB08");
 
 #endif /* CUSTOM_FONTS_H */

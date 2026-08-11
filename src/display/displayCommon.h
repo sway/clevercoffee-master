@@ -7,8 +7,8 @@
 #pragma once
 
 #include "bitmaps.h"
-#include "languages.h"
 #include "fonts/custom_fonts.h"
+#include "languages.h"
 
 inline const u8g2_cb_t* getU8G2Rotation(const int rotationValue) {
     switch (rotationValue) {
@@ -172,7 +172,7 @@ inline void drawTemperaturebar(const int x, const int heightRange) {
  * @brief Draw the temperature in big font at given position
  */
 inline void displayTemperature(const int x, const int y) {
-    u8g2->setFont(u8g2_font_fub30_tn);
+    u8g2->setFont(custom_helvB24);
 
     if (temperature < 99.499) {
         u8g2->setCursor(x + 20, y);
@@ -340,39 +340,50 @@ inline void displayBrewWeight(const int x, const int y, const float weight, cons
  * @brief Draw the brew time at given position (fullscreen brewtimer)
  */
 inline void displayBrewtimeFs(const int x, const int y, const double brewtime) {
+    const bool brewtimeSub10s = (brewtime < 9950.000);
     if (config.get<int>("display.template") == 4) {
-        u8g2->setFont(u8g2_font_fub20_tn);
-        if (brewtime < 9950.000) {
-            u8g2->setCursor(x + 15, y);
-        }
-        else {
-            u8g2->setCursor(x, y);
-        }
+        u8g2->setFont(custom_helvB18);
+        u8g2->setCursor(brewtimeSub10s ? x + 15 : x, y);
+        
         u8g2->print(brewtime / 1000, 1);
-        u8g2->setFont(u8g2_font_profont11_tf);
+        u8g2->setFont(custom_helvB08);
         u8g2->setCursor(x + 56, y + 12);
         u8g2->print("s");
     }
     else {
-        u8g2->setFont(u8g2_font_fub25_tn);
-
-        if (brewtime < 9950.000) {
-            u8g2->setCursor(x + 16, y);
-        }
-        else {
-            u8g2->setCursor(x, y);
-        }
-
+        u8g2->setFont(custom_helvB24);
+        u8g2->setCursor(brewtimeSub10s ? x + 16 : x, y);
         u8g2->print(brewtime / 1000, 1);
-        u8g2->setFont(u8g2_font_profont12_tf);
 
-        if (brewtime < 9950.000) {
-            u8g2->setCursor(x + 67, y + 16);
-        }
-        else {
-            u8g2->setCursor(x + 69, y + 16);
-        }
+        u8g2->setFont(custom_helvB08);
+        u8g2->setCursor(brewtimeSub10s ? x + 62 : x + 64, y + 15);
+        u8g2->print("s");
+    }
 
+    u8g2->setFont(u8g2_font_profont11_tf);
+}
+
+/**
+ * @brief Draw the brew time and weight at given position (fullscreen)
+ */
+inline void displayBrewtimeWeightFs(const int x, const int y, const double brewtime, const double weight) {
+    const bool brewtimeSub10s = (brewtime < 9950.000);
+    if (config.get<int>("display.template") == 4) {
+        u8g2->setFont(custom_helvB18);
+        u8g2->setCursor(brewtimeSub10s ? x + 15 : x, y);
+        
+        u8g2->print(brewtime / 1000, 1);
+        u8g2->setFont(custom_helvB08);
+        u8g2->setCursor(x + 56, y + 12);
+        u8g2->print("s");
+    }
+    else {
+        u8g2->setFont(custom_helvB24);
+        u8g2->setCursor(brewtimeSub10s ? x + 16 : x, y);
+        u8g2->print(brewtime / 1000, 1);
+
+        u8g2->setFont(custom_helvB08);
+        u8g2->setCursor(brewtimeSub10s ? x + 62 : x + 64, y + 15);
         u8g2->print("s");
     }
 
@@ -584,7 +595,7 @@ inline bool displayFullscreenBrewTimer() {
             u8g2->drawXBMP(12, 12, Brew_Cup_Logo_width, Brew_Cup_Logo_height, Brew_Cup_Logo);
 
             if (scale && config.get<bool>("hardware.sensors.scale.enabled")) {
-                u8g2->setFont(u8g2_font_profont22_tr);
+                u8g2->setFont(custom_helvB18);
                 u8g2->setCursor(5, 70);
                 u8g2->print(currBrewTime / 1000, 1);
                 u8g2->print("s");
@@ -598,20 +609,20 @@ inline bool displayFullscreenBrewTimer() {
             }
         }
         else {
-            u8g2->drawXBMP(-1, 11, Brew_Cup_Logo_width, Brew_Cup_Logo_height, Brew_Cup_Logo);
+            u8g2->drawXBMP(0, 12, Brew_Cup_Logo_width, Brew_Cup_Logo_height, Brew_Cup_Logo);
 
             if (scale && config.get<bool>("hardware.sensors.scale.enabled")) {
-                u8g2->setFont(u8g2_font_profont22_tr);
-                u8g2->setCursor(64, 15);
+                u8g2->setFont(custom_helvB18);
+                u8g2->setCursor(60, 6);
                 u8g2->print(currBrewTime / 1000, 1);
                 u8g2->print("s");
-                u8g2->setCursor(64, 38);
+                u8g2->setCursor(60, 35);
                 u8g2->print(currBrewWeight, 1);
                 u8g2->print("g");
                 u8g2->setFont(u8g2_font_profont11_tf);
             }
             else {
-                displayBrewtimeFs(48, 25, currBrewTime);
+                displayBrewtimeFs(48, 20, currBrewTime);
             }
         }
 
@@ -639,7 +650,7 @@ inline bool displayFullscreenManualFlushTimer() {
         }
         else {
             u8g2->drawXBMP(0, 12, Manual_Flush_Logo_width, Manual_Flush_Logo_height, Manual_Flush_Logo);
-            displayBrewtimeFs(48, 25, currBrewTime);
+            displayBrewtimeFs(48, 20, currBrewTime);
         }
 
         displayBufferReady = true;
@@ -665,7 +676,7 @@ inline bool displayFullscreenHotWaterTimer() {
         }
         else {
             u8g2->drawXBMP(0, 12, Hot_Water_Logo_width, Hot_Water_Logo_height, Hot_Water_Logo);
-            displayBrewtimeFs(48, 25, currPumpOnTime);
+            displayBrewtimeFs(48, 20, currPumpOnTime);
         }
 
         displayBufferReady = true;
@@ -727,18 +738,14 @@ inline bool displayMachineState() {
         displayStatusbar();
 
         u8g2->drawXBMP(0, 20, Heating_Logo_width, Heating_Logo_height, Heating_Logo);
-        u8g2->setFont(u8g2_font_fub25_tn);
+        u8g2->setFont(custom_helvB24);
 
-        if (temperature < 99.95) {
-            u8g2->setCursor(50, 30);
-            u8g2->print(temperature, 1);
-        }
-        else {
-            u8g2->setCursor(58, 30);
-            u8g2->print(temperature, 0);
-        }
+        char tempBuf[12];
+        const int decimals = (temperature < 99.95) ? 1 : 0;
+        snprintf(tempBuf, sizeof(tempBuf), decimals ? "%.1f\xb0" : "%.0f\xb0", temperature);
 
-        u8g2->drawCircle(122, 32, 3);
+        u8g2->setCursor(50, 30);
+        u8g2->print(tempBuf);
 
         u8g2->sendBuffer();
         return true;

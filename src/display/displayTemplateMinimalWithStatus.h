@@ -83,7 +83,8 @@ inline void printScreen() {
     }
     else if (machineState == kHotWater && config.get<bool>("hardware.switches.brew.enabled")) {
         snprintf(stateBuf, sizeof(stateBuf), "HOT WATER %.0fs", currPumpOnTime / 1000.0);
-    } else if (config.get<bool>("hardware.switches.brew.enabled") && shouldDisplayBrewTimer()) {
+    }
+    else if (config.get<bool>("hardware.switches.brew.enabled") && shouldDisplayBrewTimer()) {
         const bool automaticBrewingEnabled = config.get<int>("brew.mode") == 1;
 
         // Time — show target if set
@@ -120,7 +121,8 @@ inline void printScreen() {
     }
     else if (!nearSetpoint && temperature > setpoint) {
         strncpy(stateBuf, "TEMP TOO HIGH", sizeof(stateBuf));
-    } else if (nearSetpoint) {
+    }
+    else if (nearSetpoint) {
         strncpy(stateBuf, "READY TO BREW", sizeof(stateBuf));
     }
 
