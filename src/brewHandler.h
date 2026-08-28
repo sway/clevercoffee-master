@@ -13,7 +13,15 @@
 #pragma once
 
 #include "brewStates.h"
+#include "hwConfig.h"
 #include "scaleHandler.h"
+
+// Brew mode / target settings, kept in sync with the config store by ParameterRegistry.
+// Read every loop iteration by brew(), so they must not go through a JSON lookup.
+inline int brewMode = 0;
+inline bool brewByTimeEnabled = false;
+inline bool brewByWeightEnabled = false;
+inline bool preInfusionEnabled = false;
 
 // Brew control states
 inline BrewSwitchState currBrewSwitchState = kBrewSwitchIdle;
@@ -95,7 +103,7 @@ inline void checkBrewSwitch() {
     loggedEmptyWaterTank = false;
 
     // Convert toggle brew switch input to brew switch state
-    if (const int brewSwitchType = config.get<int>("hardware.switches.brew.type"); brewSwitchType == Switch::TOGGLE) {
+    if (hwConfig.brewSwitchType == Switch::TOGGLE) {
         if (currReadingBrewSwitch != brewSwitchReading) {
             currReadingBrewSwitch = brewSwitchReading;
         }
@@ -134,7 +142,7 @@ inline void checkBrewSwitch() {
         }
     }
     // Convert momentary brew switch input to brew switch state
-    else if (brewSwitchType == Switch::MOMENTARY) {
+    else if (hwConfig.brewSwitchType == Switch::MOMENTARY) {
         if (currReadingBrewSwitch != brewSwitchReading) {
             currReadingBrewSwitch = brewSwitchReading;
         }
@@ -208,7 +216,7 @@ inline void debugPumpState(String label, String state) {
  * @return true if brew is running, false otherwise
  */
 inline bool brew() {
-    if (!config.get<bool>("hardware.switches.brew.enabled") || brewSwitch == nullptr) {
+    if (brewSwitch == nullptr) {
         return false; // brew switch is not enabled, so no brew process running
     }
 
@@ -227,10 +235,9 @@ inline bool brew() {
         currBrewTime = currentMillisTemp - startingTime;
     }
 
-    const int brewMode = config.get<int>("brew.mode");
-    const bool brewByTimeEnabled = brewMode != 0 && config.get<bool>("brew.by_time.enabled");
-    const bool brewByWeightEnabled = brewMode != 0 && config.get<bool>("brew.by_weight.enabled");
-    const bool preinfusionEnabled = config.get<bool>("brew.pre_infusion.enabled");
+    const bool brewByTimeActive = brewMode != 0 && brewByTimeEnabled;
+    const bool brewByWeightActive = brewMode != 0 && brewByWeightEnabled;
+    const bool preinfusionEnabled = preInfusionEnabled;
 
     // check if brewswitch was turned off after a brew; Brew only runs once even brewswitch is still pressed
     if (currBrewSwitchState == kBrewSwitchIdle) {
@@ -273,7 +280,7 @@ inline bool brew() {
                     currBrewState = kPreinfusion;
                 }
 
-                if (scale && config.get<bool>("hardware.sensors.scale.enabled") && config.get<int>("hardware.sensors.scale.type") == 2) {
+                if (scale && isBluetoothScale) {
                     const auto bleScale = static_cast<BluetoothScale*>(scale);
 
                     if (config.get<bool>("display.blescale_brew_timer")) {
@@ -281,7 +288,7 @@ inline bool brew() {
                         bleScale->startTimer();
                     }
 
-                    if (config.get<bool>("brew.by_weight.enabled") && config.get<bool>("brew.by_weight.auto_tare")) {
+                    if (brewByWeightEnabled && config.get<bool>("brew.by_weight.auto_tare")) {
                         // only send tare command if not already close to zero
                         if (abs(currReadingWeight) > 0.2) {
                             LOG(INFO, "Tare scale");
@@ -326,14 +333,14 @@ inline bool brew() {
                 pumpRelay->on();
                 debugPumpState("BrewRunning", "on");
 
-                if (currBrewTime > totalTargetBrewTime && brewByTimeEnabled) {
+                if (currBrewTime > totalTargetBrewTime && brewByTimeActive) {
                     LOG(INFO, "Brew reached time target");
                     currBrewState = kBrewFinished;
                 }
-                else if (scale && config.get<bool>("hardware.sensors.scale.enabled")) {
+                else if (scale) {
                     const auto targetBrewWeight = ParameterRegistry::getInstance().getParameterById("brew.by_weight.target_weight")->getValueAs<float>();
 
-                    if (currBrewWeight > targetBrewWeight && brewByWeightEnabled) {
+                    if (currBrewWeight > targetBrewWeight && brewByWeightActive) {
                         LOG(INFO, "Brew reached weight target");
                         currBrewState = kBrewFinished;
                     }
@@ -354,7 +361,7 @@ inline bool brew() {
                 LOG(INFO, "Brew idle");
                 currBrewState = kBrewIdle;
 
-                if (scale && config.get<bool>("hardware.sensors.scale.enabled") && config.get<int>("hardware.sensors.scale.type") == 2 && config.get<bool>("display.blescale_brew_timer")) {
+                if (scale && isBluetoothScale && config.get<bool>("display.blescale_brew_timer")) {
                     static_cast<BluetoothScale*>(scale)->stopTimer();
                 }
 
@@ -376,7 +383,7 @@ inline bool brew() {
  * @return true if manual flush is running, false otherwise
  */
 inline bool manualFlush() {
-    if (!config.get<bool>("hardware.switches.brew.enabled") || brewSwitch == nullptr) {
+    if (brewSwitch == nullptr) {
         return false; // brew switch is not enabled, so no brew process running
     }
 
@@ -424,7 +431,7 @@ inline bool manualFlush() {
  * @brief Backflush
  */
 inline void backflush() {
-    if (!config.get<bool>("hardware.switches.brew.enabled") || brewSwitch == nullptr) {
+    if (brewSwitch == nullptr) {
         return; // brew switch is not enabled, so no brew process running
     }
 

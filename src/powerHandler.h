@@ -5,6 +5,8 @@
  */
 #pragma once
 
+#include "hwConfig.h"
+
 inline bool currStatePowerSwitchPressed = false;
 inline bool lastPowerSwitchPressed = false;
 inline unsigned long systemInitializedTime = 0;
@@ -16,7 +18,7 @@ extern bool systemInitialized;
 void performSafeShutdown();
 
 inline void checkPowerSwitch() {
-    if (!config.get<bool>("hardware.switches.power.enabled") || powerSwitch == nullptr) {
+    if (powerSwitch == nullptr) {
         return;
     }
 
@@ -28,7 +30,7 @@ inline void checkPowerSwitch() {
         systemInitializedTime = currentMillis;
     }
 
-    if (const int powerSwitchType = config.get<int>("hardware.switches.power.type"); powerSwitchType == Switch::TOGGLE) {
+    if (hwConfig.powerSwitchType == Switch::TOGGLE) {
         if (powerSwitchPressed != lastPowerSwitchPressed) {
             lastPowerSwitchPressed = powerSwitchPressed;
 
@@ -53,7 +55,7 @@ inline void checkPowerSwitch() {
             }
         }
     }
-    else if (powerSwitchType == Switch::MOMENTARY) {
+    else if (hwConfig.powerSwitchType == Switch::MOMENTARY) {
         if (powerSwitchPressed != currStatePowerSwitchPressed) {
             currStatePowerSwitchPressed = powerSwitchPressed;
 
@@ -129,14 +131,14 @@ inline void checkPowerSwitch() {
  * @return true if operation is allowed, false otherwise
  */
 inline bool isPowerSwitchOperationAllowed() {
-    if (!config.get<bool>("hardware.switches.power.enabled") || powerSwitch == nullptr) {
+    if (powerSwitch == nullptr) {
         return true; // No power switch configured, allow operation
     }
 
-    if (const int powerSwitchType = config.get<int>("hardware.switches.power.type"); powerSwitchType == Switch::TOGGLE) {
+    if (hwConfig.powerSwitchType == Switch::TOGGLE) {
         return powerSwitch->isPressed();
     }
-    else if (powerSwitchType == Switch::MOMENTARY) {
+    else if (hwConfig.powerSwitchType == Switch::MOMENTARY) {
         // For momentary switches, check machine state instead of switch state
         return machineState != kStandby;
     }

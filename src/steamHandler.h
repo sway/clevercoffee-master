@@ -5,10 +5,12 @@
  */
 #pragma once
 
+#include "hwConfig.h"
+
 inline uint8_t currStateSteamSwitch;
 
 inline void checkSteamSwitch() {
-    if (!config.get<bool>("hardware.switches.steam.enabled") || steamSwitch == nullptr) {
+    if (steamSwitch == nullptr) {
         return;
     }
 
@@ -18,7 +20,7 @@ inline void checkSteamSwitch() {
 
     const uint8_t steamSwitchReading = steamSwitch->isPressed();
 
-    if (config.get<int>("hardware.switches.steam.type") == Switch::TOGGLE) {
+    if (hwConfig.steamSwitchType == Switch::TOGGLE) {
         // Set steamON to 1 when steamswitch is HIGH
         if (steamSwitchReading == HIGH) {
             if (machineState != kStandby) {
@@ -37,7 +39,7 @@ inline void checkSteamSwitch() {
 
         currStateSteamSwitch = steamSwitchReading;
     }
-    else if (config.get<int>("hardware.switches.steam.type") == Switch::MOMENTARY) {
+    else if (hwConfig.steamSwitchType == Switch::MOMENTARY) {
         if (steamSwitchReading != currStateSteamSwitch) {
             currStateSteamSwitch = steamSwitchReading;
 

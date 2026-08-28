@@ -21,6 +21,7 @@
 // Includes
 #include "Config.h"
 #include "ParameterRegistry.h"
+#include "hwConfig.h"
 
 // Utilities
 #include "utils/Timer.h"
@@ -96,6 +97,7 @@ bool featureFullscreenManualFlushTimer = false;
 bool featureFullscreenHotWaterTimer = false;
 double postBrewTimerDuration = POST_BREW_TIMER_DURATION;
 bool featureHeatingLogo = false;
+double blinkingDelta = BLINKING_DELTA; // synced from "display.blinking.delta", read every loop in loopLED()
 
 // WiFi
 WiFiManager wm;
@@ -970,6 +972,9 @@ void setup() {
         }
     }
 
+    // Cache reboot-only hardware config so the main loop never has to do a JSON lookup for it
+    loadHwConfig(config);
+
     // Calculate derived values
     aggKi = aggTn > 0 ? aggKp / aggTn : 0;
     aggKd = aggTv * aggKp;
@@ -1357,7 +1362,7 @@ void loopPid() {
         shotTimerScale(); // Calculation of weight of shot while brew is running
     }
 
-    if (config.get<bool>("hardware.sensors.pressure.enabled")) {
+    if (hwConfig.pressureEnabled) {
         if (const unsigned long currentMillisPressure = millis(); currentMillisPressure - previousMillisPressure >= intervalPressure) {
             previousMillisPressure = currentMillisPressure;
             inputPressure = measurePressure();
@@ -1382,7 +1387,7 @@ void loopPid() {
     valveSafetyShutdownCheck();
     testTimer();
 
-    if (config.get<bool>("hardware.switches.brew.enabled")) {
+    if (brewSwitch != nullptr) {
         shouldDisplayBrewTimer();
     }
 
@@ -1485,8 +1490,8 @@ void loopPid() {
 
 void loopLED() {
     // status LED active when not in error state and temperature is in setpoint range
-    if (config.get<bool>("hardware.leds.status.enabled") && statusLed != nullptr) {
-        bool nearSetpoint = fabs(temperature - setpoint) <= (machineState == kSteam ? 5 : config.get<float>("display.blinking.delta"));
+    if (statusLed != nullptr) {
+        bool nearSetpoint = fabs(temperature - setpoint) <= (machineState == kSteam ? 5 : static_cast<float>(blinkingDelta));
 
         if (machineState <= kBackflush && nearSetpoint) {
             statusLed->turnOn();
@@ -1497,18 +1502,18 @@ void loopLED() {
     }
 
     // brew LED on during brew and blinking during manual flush and backflush
-    if (config.get<bool>("hardware.leds.brew.enabled") && brewLed != nullptr) {
+    if (brewLed != nullptr) {
         brewLed->setGPIOState((machineState == kBrew) || (isrCounter < 500 && (machineState == kManualFlush || (machineState == kBackflush && currBackflushState != kBackflushIdle))));
     }
 
     // steam LED on if in steam mode
-    if (config.get<bool>("hardware.leds.steam.enabled") && steamLed != nullptr) {
+    if (steamLed != nullptr) {
         steamLed->setGPIOState(machineState == kSteam);
     }
 }
 
 void checkWaterTank() {
-    if (!config.get<bool>("hardware.sensors.watertank.enabled") || waterTankSensor == nullptr) {
+    if (waterTankSensor == nullptr) {
         return;
     }
 

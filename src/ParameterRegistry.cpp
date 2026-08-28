@@ -24,8 +24,13 @@ extern double aggbTv;
 extern double emaFactor;
 extern double steamSetpoint;
 extern double targetBrewTime;
+extern int brewMode;
+extern bool brewByTimeEnabled;
+extern bool brewByWeightEnabled;
+extern bool preInfusionEnabled;
 extern double preinfusion;
 extern double preinfusionPause;
+extern double blinkingDelta;
 extern int backflushCycles;
 extern double backflushFillTime;
 extern double backflushFlushTime;
@@ -225,7 +230,7 @@ void ParameterRegistry::initialize(Config& config) {
             "Brew Mode",
             sBrewSection,
             301,
-            nullptr,
+            &brewMode,
             brewModes,
             2,
             "Manual mode gives you full control over the brew time while Automatic mode allows you to activate brew-by-time and/or brew-by-weight. The brew will then stop at whatever target is reached first."
@@ -236,7 +241,7 @@ void ParameterRegistry::initialize(Config& config) {
             "Brew by Time",
             sBrewSection,
             311,
-            nullptr,
+            &brewByTimeEnabled,
             "Enables brew by time, so the pump stops automatically when the target brew time is reached. Only available when Brew Mode is set to Automatic",
             [&config] { return config.get<int>("brew.mode") == 1; }
         );
@@ -260,7 +265,7 @@ void ParameterRegistry::initialize(Config& config) {
                 "Brew by Weight",
                 sBrewSection,
                 321,
-                nullptr,
+                &brewByWeightEnabled,
                 "Enables brew by weight, so the pump stops automatically when the target weight is reached. Only available when Brew Mode is set to Automatic",
                 [&config] { return config.get<int>("brew.mode") == 1; }
             );
@@ -294,7 +299,7 @@ void ParameterRegistry::initialize(Config& config) {
             "Pre-Infusion",
             sBrewSection,
             331,
-            nullptr,
+            &preInfusionEnabled,
             "Enables pre-wetting of the coffee puck by turning on the pump for a configurable length of time."
         );
 
@@ -633,7 +638,7 @@ void ParameterRegistry::initialize(Config& config) {
         kDouble,
         sDisplaySection,
         911,
-        nullptr,
+        &blinkingDelta,
         0.2,
         10,
         "Delta from setpoint for blinking temperature display"
