@@ -1056,6 +1056,15 @@ void setup() {
             otaPass = config.get<String>("system.ota_password");
             ArduinoOTA.setHostname(hostname.c_str()); //  Device name for OTA
             ArduinoOTA.setPassword(otaPass.c_str());  //  Password for OTA
+
+            // Disable the heater timer ISR while an OTA update runs, otherwise it interferes
+            ArduinoOTA.onStart([]() {
+                disableTimer1();
+                heaterRelay->off();
+            });
+            ArduinoOTA.onError([](ota_error_t error) { enableTimer1(); });
+            ArduinoOTA.onEnd([]() { enableTimer1(); });
+
             ArduinoOTA.begin();
         }
 
@@ -1299,18 +1308,7 @@ void loopPid() {
             }
         }
 
-        ArduinoOTA.handle(); // For OTA
-
-        // Disable interrupt if OTA is starting, otherwise it will not work
-        ArduinoOTA.onStart([]() {
-            disableTimer1();
-            heaterRelay->off();
-        });
-
-        ArduinoOTA.onError([](ota_error_t error) { enableTimer1(); });
-
-        // Enable interrupts if OTA is finished
-        ArduinoOTA.onEnd([]() { enableTimer1(); });
+        ArduinoOTA.handle(); // For OTA (callbacks are registered once in setup())
 
         wifiReconnects = 0; // reset wifi reconnects if connected
     }
