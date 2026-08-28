@@ -221,7 +221,6 @@ inline bool brew() {
     }
 
     const unsigned long currentMillisTemp = millis();
-    checkBrewSwitch();
 
     // abort function for state machine from every state
     if (currBrewSwitchState == kBrewSwitchIdle && currBrewState > kBrewIdle && currBrewState < kBrewFinished) {
@@ -388,7 +387,6 @@ inline bool manualFlush() {
     }
 
     const unsigned long currentMillisTemp = millis();
-    checkBrewSwitch();
 
     if (currManualFlushState == kManualFlushRunning) {
         currBrewTime = currentMillisTemp - startingTime;
@@ -434,8 +432,6 @@ inline void backflush() {
     if (brewSwitch == nullptr) {
         return; // brew switch is not enabled, so no brew process running
     }
-
-    checkBrewSwitch();
 
     if (currBackflushState != kBackflushIdle && !backflushOn) {
         currBackflushState = kBackflushFinished; // Force reset in case backflushOn is reset during backflush!

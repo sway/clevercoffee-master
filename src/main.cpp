@@ -1380,6 +1380,13 @@ void loopPid() {
     }
 
     updateStandbyTimer();
+
+    // Advance the brew switch state machine once per loop; brew(), manualFlush()
+    // and backflush() (called from handleMachineState()) then consume the result.
+    if (brewSwitch != nullptr) {
+        checkBrewSwitch();
+    }
+
     handleMachineState();
     hotWaterHandler();
     valveSafetyShutdownCheck();
