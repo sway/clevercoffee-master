@@ -1257,8 +1257,7 @@ void ParameterRegistry::initialize(Config& config) {
 
     // clang-format on
 
-    addParam(std::make_shared<Parameter>(
-        "VERSION", "Version", kCString, sOtherSection, 7, [] { return sysVersion; }, nullptr, 64, false, "", [] { return false; }, nullptr));
+    addParam(std::make_shared<Parameter>("VERSION", "Version", kCString, sOtherSection, 7, [] { return sysVersion; }, nullptr, 64, false, "", [] { return false; }, nullptr));
 
     std::sort(_parameters.begin(), _parameters.end(), [](const std::shared_ptr<Parameter>& a, const std::shared_ptr<Parameter>& b) { return a->getPosition() < b->getPosition(); });
 

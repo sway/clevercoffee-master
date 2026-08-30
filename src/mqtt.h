@@ -96,8 +96,8 @@ inline void checkMQTT() {
                 mqtt.subscribe(topic_set);
                 LOGF(DEBUG, "Subscribed to MQTT Topic: %s", topic_set);
                 MQTTReCnctCount = 0; // reset MQTT reconnect count to zero after a successful connection
-            }                        // Try to reconnect to the server; connect() is a blocking
-                                     // function, watch the timeout!
+            } // Try to reconnect to the server; connect() is a blocking
+              // function, watch the timeout!
             else {
                 LOGF(DEBUG, "Failed to connect to MQTT due to reason: %i", mqtt.state());
             }
