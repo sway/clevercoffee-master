@@ -29,27 +29,16 @@ const uint8_t custom_helvB24[544] U8G2_FONT_SECTION("custom_helvB24") = "\20\1\4
                                                                         "\77\374\243\243\353Z\25*E\254\20\261B\305\323.]\252\332L\71\62\345\10\225*\344\214%\62\0\260"
                                                                         "\31-\337>\220r\307\304\210\222H\224 Q\202DI#\354\134y\370\77\3\0\0\0\4\377\377\0";
 
-/* custom_helvR24: 1 glyphs, 76 bytes, sources: helvR24.bdf */
+/* custom_helvB12: 2 glyphs, 82 bytes, sources: helvB12.bdf */
 /*
-  Fontname: -custom-custom_helvR24
-  Copyright: (null)
-  Glyphs: 1/1
-  BBX Build Mode: 1
-*/
-const uint8_t custom_helvR24[63] U8G2_FONT_SECTION("custom_helvR24") = "\1\1\4\4\5\5\1\1\6\15\22\2\0\0\0\0\0\0\0\0\0\0\42s P\16[\311d\312\6"
-                                                                       "\21\32\66h\370h\263h\17\223&\63n\314\270\61\244F\255Rh\12\0\0\0\0\4\377\377\0";
-
-/* custom_helvR18: 2 glyphs, 111 bytes, sources: helvR18.bdf */
-/*
-  Fontname: -custom-custom_helvR18
+  Fontname: -custom-custom_helvB12
   Copyright: (null)
   Glyphs: 2/2
   BBX Build Mode: 1
 */
-const uint8_t custom_helvR18[98] U8G2_FONT_SECTION("custom_helvR18") = "\2\1\3\3\4\5\1\4\5\13\23\1\373\0\373\0\373\0\0\0\0\0Eg&>\217'Ij\21\316"
-                                                                       "\210\322\331X&\227\311er\231\134\66\26J\207\63\252EL\222Cer\331Tz\220W\1s\35<"
-                                                                       "\17\237\365\20\33\216\304\42\71\254\16\271C\352\260\221X$\26\15g\207\250\35\377\0\0\0\0\4\377\377"
-                                                                       "\0";
+const uint8_t custom_helvB12[69] U8G2_FONT_SECTION("custom_helvB12") = "\2\1\3\3\4\4\1\3\5\10\15\1\374\0\374\0\374\0\0\0\0\0(g\26\332\241\67\221\235\226\204"
+                                                                       "\42\241H(Z;N\344\20\321\232\225\6s\20\331\221U;\311D\344\372H&\272\325\361\6\0\0\0"
+                                                                       "\4\377\377\0";
 
 /* custom_helvB18: 16 glyphs, 485 bytes, sources: helvB18.bdf */
 /*
