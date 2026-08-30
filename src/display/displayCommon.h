@@ -337,24 +337,34 @@ inline void displayBrewWeight(const int x, const int y, const float weight, cons
  */
 inline void displayBrewtimeFs(const int x, const int y, const double brewtime) {
     const bool brewtimeSub10s = (brewtime < 9950.000);
-    if (config.get<int>("display.template") == 4) {
-        u8g2->setFont(custom_helvB18);
-        u8g2->setCursor(brewtimeSub10s ? x + 7 : x, y);
-        u8g2->print(brewtime / 1000, 1);
 
-        u8g2->setFont(custom_helvB08);
-        u8g2->setCursor(brewtimeSub10s ? x + 42 : x + 48, y + 10);
-        u8g2->print("S");
+    // Only N.N and NN.N are handled. Every position is a fixed constant (chosen by
+    // digit count) - no runtime string measurement. unitDrop bottom-aligns the
+    // smaller helvB12 unit with the number: the display uses font position "top",
+    // so the drop equals the number font's ascent.
+    int unitX;
+    int unitDrop;
+
+    if (config.get<int>("display.template") == 4) {
+        // Vertical display, 64px wide: center the number + unit for each digit count.
+        u8g2->setFont(custom_helvB18);
+        u8g2->setCursor(brewtimeSub10s ? 12 : 5, y);
+        unitX = brewtimeSub10s ? 45 : 51;
+        unitDrop = 18;
     }
     else {
+        // Horizontal display: right-anchored (N.N nudged right by one digit width).
         u8g2->setFont(custom_helvB24);
-        u8g2->setCursor(brewtimeSub10s ? x + 16 : x, y);
-        u8g2->print(brewtime / 1000, 1);
-
-        u8g2->setFont(custom_helvB08);
-        u8g2->setCursor(brewtimeSub10s ? x + 62 : x + 64, y + 15);
-        u8g2->print("S");
+        u8g2->setCursor(brewtimeSub10s ? x + 18 : x, y);
+        unitX = x + 63;
+        unitDrop = 23;
     }
+
+    u8g2->print(brewtime / 1000, 1);
+
+    u8g2->setFont(custom_helvB12);
+    u8g2->setCursor(unitX, y + unitDrop);
+    u8g2->print("s");
 
     u8g2->setFont(custom_profont11);
 }
@@ -564,13 +574,26 @@ inline bool displayFullscreenBrewTimer() {
             u8g2->drawXBMP(12, 12, Brew_Cup_Logo_width, Brew_Cup_Logo_height, Brew_Cup_Logo);
 
             if (scale && config.get<bool>("hardware.sensors.scale.enabled")) {
+                // Vertical display (64px wide): center the number + unit for each digit
+                // count (N.N / NN.N). All positions are fixed constants. Unit in helvB12;
+                // +18 (helvB18 ascent) bottom-aligns it with the number (font pos "top").
+                const bool timeSub10 = currBrewTime < 9950.0;
+                const bool weightSub10 = fabs(currBrewWeight) < 9.95;
+
                 u8g2->setFont(custom_helvB18);
-                u8g2->setCursor(5, 70);
+                u8g2->setCursor(timeSub10 ? 12 : 5, 70);
                 u8g2->print(currBrewTime / 1000, 1);
+                u8g2->setFont(custom_helvB12);
+                u8g2->setCursor(timeSub10 ? 45 : 51, 70 + 18);
                 u8g2->print("s");
-                u8g2->setCursor(5, 100);
+
+                u8g2->setFont(custom_helvB18);
+                u8g2->setCursor(weightSub10 ? 11 : 4, 100);
                 u8g2->print(currBrewWeight, 1);
+                u8g2->setFont(custom_helvB12);
+                u8g2->setCursor(weightSub10 ? 44 : 50, 100 + 18);
                 u8g2->print("g");
+
                 u8g2->setFont(custom_profont11);
             }
             else {
@@ -581,13 +604,23 @@ inline bool displayFullscreenBrewTimer() {
             u8g2->drawXBMP(2, 12, Brew_Cup_Logo_width, Brew_Cup_Logo_height, Brew_Cup_Logo);
 
             if (scale && config.get<bool>("hardware.sensors.scale.enabled")) {
+                // Right-anchor at x=106 (N.N nudged right by one digit width) so the unit
+                // sits at a fixed x for N.N / NN.N. Unit in helvB12; +18 (helvB18 ascent)
+                // bottom-aligns it with the number (font position is "top").
                 u8g2->setFont(custom_helvB18);
-                u8g2->setCursor(60, 6);
+                u8g2->setCursor(currBrewTime < 9950.0 ? 73 : 60, 6);
                 u8g2->print(currBrewTime / 1000, 1);
+                u8g2->setFont(custom_helvB12);
+                u8g2->setCursor(106, 6 + 18);
                 u8g2->print("s");
-                u8g2->setCursor(60, 35);
+
+                u8g2->setFont(custom_helvB18);
+                u8g2->setCursor(fabs(currBrewWeight) < 9.95 ? 73 : 60, 35);
                 u8g2->print(currBrewWeight, 1);
+                u8g2->setFont(custom_helvB12);
+                u8g2->setCursor(106, 35 + 18);
                 u8g2->print("g");
+
                 u8g2->setFont(custom_profont11);
             }
             else {
