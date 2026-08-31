@@ -45,12 +45,12 @@ inline void printScreen() {
     else if (machineState == kStandby) {
         u8g2->drawXBMP(6, 50, Off_Logo_width, Off_Logo_height, Off_Logo);
         u8g2->setCursor(1, 110);
-        u8g2->setFont(u8g2_font_profont10_tf);
+        u8g2->setFont(custom_profont11);
         u8g2->print("Standby mode");
     }
     else {
         // no fullscreen states
-        u8g2->setFont(u8g2_font_profont11_tf);
+        u8g2->setFont(custom_profont11);
         u8g2->setCursor(1, 14);
         u8g2->print(langstring_current_temp_ur);
         u8g2->print(temperature, 1);
@@ -73,7 +73,7 @@ inline void printScreen() {
         if (machineState == kPidDisabled) {
             u8g2->drawXBMP(6, 50, Off_Logo_width, Off_Logo_height, Off_Logo);
             u8g2->setCursor(1, 110);
-            u8g2->setFont(u8g2_font_profont10_tf);
+            u8g2->setFont(custom_profont11);
             u8g2->print("PID disabled");
         }
 
@@ -86,7 +86,7 @@ inline void printScreen() {
         else if (config.get<bool>("display.heating_logo") && machineState == kPidNormal && setpoint - temperature > 5.0) {
             // For status info
             u8g2->drawXBMP(12, 50, Heating_Logo_width, Heating_Logo_height, Heating_Logo);
-            u8g2->setFont(u8g2_font_fub17_tr);
+            u8g2->setFont(custom_helvB18);
             u8g2->setCursor(8, 90);
             u8g2->print(temperature, 1);
         }
@@ -102,7 +102,7 @@ inline void printScreen() {
                 u8g2->setCursor(1, 55);
             }
 
-            u8g2->setFont(u8g2_font_profont22_tr);
+            u8g2->setFont(custom_helvB08);
 
             bool nearSetpoint = fabs(temperature - setpoint) <= config.get<float>("display.blinking.delta");
 
@@ -110,7 +110,6 @@ inline void printScreen() {
                 u8g2->print("FLUSH");
             }
             else if (machineState == kBackflush) {
-                u8g2->setFont(u8g2_font_profont15_tr);
                 u8g2->print("BACKFLUSH");
             }
             else if (shouldDisplayBrewTimer()) {
@@ -125,7 +124,7 @@ inline void printScreen() {
                 }
             }
 
-            u8g2->setFont(u8g2_font_profont11_tf);
+            u8g2->setFont(custom_profont11);
 
             // PID values above heater output bar
             u8g2->setCursor(1, 84);
@@ -161,7 +160,7 @@ inline void printScreen() {
             }
 
             if (pressureEnabled) {
-                u8g2->setFont(u8g2_font_profont11_tf);
+                u8g2->setFont(custom_profont11);
 
                 if (scale) {
                     u8g2->setCursor(1, 54);
@@ -219,7 +218,7 @@ inline void printScreen() {
         }
         else {
             u8g2->setCursor(4, 1);
-            u8g2->setFont(u8g2_font_profont11_tf);
+            u8g2->setFont(custom_profont11);
             u8g2->print(langstring_offlinemode);
         }
 
